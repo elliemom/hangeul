@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>한글탐험대</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#fff7ec;color:#342b2b;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.app{max-width:520px;margin:auto;min-height:100vh;background:#fffdf8;padding:18px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.logo{font-weight:900;font-size:24px}
+.star{background:#fff0a6;padding:9px 13px;border-radius:20px;font-weight:900}
+.page{display:none}
+.page.on{display:block}
+.hero{background:linear-gradient(135deg,#ffdca0,#ffd2e1);border-radius:30px;padding:24px;text-align:center}
+.buddy{font-size:78px}
+.hero h1{margin:4px 0 8px;font-size:30px}
+.hero p{margin:0 0 20px}
+.btn{border:0;border-radius:18px;padding:15px 20px;font-size:18px;font-weight:900;background:#ff8a5b;color:white;cursor:pointer}
+.section{font-size:19px;font-weight:900;margin:22px 0 10px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{border:2px solid #f0e4d6;background:white;border-radius:22px;padding:18px;text-align:center;cursor:pointer}
+.card .i{font-size:38px}
+.card b{display:block;margin-top:8px}
+.back{border:0;background:#eee5db;padding:9px 13px;border-radius:14px;font-weight:800;cursor:pointer}
+.title{font-size:25px;font-weight:900;margin:18px 0 8px}
+.hint{color:#756a61}
+.listen{display:block;margin:12px auto 20px;border:0;border-radius:50%;width:62px;height:62px;font-size:28px;background:#ffe89a;cursor:pointer}
+.letter{font-size:120px;font-weight:900;text-align:center;color:#ff7954;margin:18px 0 4px}
+.question{text-align:center;font-size:19px;font-weight:800}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.choice{border:2px solid #eadfd4;background:white;border-radius:19px;padding:20px 5px;font-size:34px;font-weight:900;cursor:pointer}
+.msg{text-align:center;min-height:36px;font-size:20px;font-weight:900;margin:14px 0}
+.combine{text-align:center;font-size:48px;font-weight:900;margin:30px 0}
+.wordpic{text-align:center;font-size:100px;margin:24px}
+.small{font-size:14px;color:#81766d}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="top">
+    <div class="logo">🗺️ 한글탐험대</div>
+    <div class="star">⭐ <span id="stars">0</span></div>
+  </div>
+
+  <section id="home" class="page on">
+    <div class="hero">
+      <div class="buddy">🐰</div>
+      <h1>오늘의 한글 모험!</h1>
+      <p>토끼랑 같이 글자를 찾아보자 ✨</p>
+      <button class="btn" onclick="go('sound')">모험 시작하기 🚀</button>
+    </div>
+    <div class="section">오늘의 탐험</div>
+    <div class="cards">
+      <div class="card" onclick="go('sound')"><div class="i">🔊</div><b>소리 탐험</b><span class="small">글자를 듣고 찾아요</span></div>
+      <div class="card" onclick="go('combine')"><div class="i">🧩</div><b>글자 만들기</b><span class="small">ㄱ + ㅏ = 가</span></div>
+      <div class="card" onclick="go('word')"><div class="i">🍎</div><b>단어 탐험</b><span class="small">그림과 글자를 연결해요</span></div>
+      <div class="card" onclick="alert('다음 업데이트에서 만나요! ✏️')"><div class="i">✏️</div><b>따라쓰기</b><span class="small">준비 중</span></div>
+    </div>
+  </section>
+
+  <section id="sound" class="page">
+    <button class="back" onclick="go('home')">← 돌아가기</button>
+    <div class="title">🔊 소리 탐험</div>
+    <div class="hint">소리를 듣고 같은 글자를 찾아줘!</div>
+    <div class="letter">ㄱ</div>
+    <button class="listen" onclick="speak('기역')">🔊</button>
+    <div class="question">“ㄱ”을 찾아볼까?</div>
+    <div class="choices">
+      <button class="choice" onclick="pick(this,false)">ㅁ</button>
+      <button class="choice" onclick="pick(this,true)">ㄱ</button>
+      <button class="choice" onclick="pick(this,false)">ㅂ</button>
+    </div>
+    <div id="sm" class="msg"></div>
+  </section>
+
+  <section id="combine" class="page">
+    <button class="back" onclick="go('home')">← 돌아가기</button>
+    <div class="title">🧩 글자 만들기</div>
+    <div class="hint">두 친구를 만나게 해보자!</div>
+    <div class="combine">ㄱ + ㅏ = ?</div>
+    <div class="choices">
+      <button class="choice" onclick="combine(false)">나</button>
+      <button class="choice" onclick="combine(true)">가</button>
+      <button class="choice" onclick="combine(false)">다</button>
+    </div>
+    <div id="cm" class="msg"></div>
+  </section>
+
+  <section id="word" class="page">
+    <button class="back" onclick="go('home')">← 돌아가기</button>
+    <div class="title">🍎 단어 탐험</div>
+    <div class="hint">그림을 보고 맞는 단어를 찾아줘!</div>
+    <div class="wordpic">🍎</div>
+    <div class="choices">
+      <button class="choice" onclick="word(false)">포도</button>
+      <button class="choice" onclick="word(true)">사과</button>
+      <button class="choice" onclick="word(false)">우유</button>
+    </div>
+    <div id="wm" class="msg"></div>
+  </section>
+
+</div>
+
+<script>
+let stars = 0;
+
+function go(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0, 0);
+}
+
+function add(){
+  stars++;
+  document.getElementById('stars').textContent = stars;
+}
+
+function speak(t){
+  if (!('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t);
+    u.lang = 'ko-KR';
+    u.rate = 0.8;
+    const ko = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith('ko'));
+    if (ko) u.voice = ko;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+if ('speechSynthesis' in window) speechSynthesis.getVoices();
+
+function pick(el, ok){
+  const m = document.getElementById('sm');
+  if (ok){ m.textContent = '🎉 정답! 정말 잘했어!'; add(); speak('정답!'); }
+  else m.textContent = '💛 다시 찾아볼까?';
+}
+
+function combine(ok){
+  const m = document.getElementById('cm');
+  if (ok){ m.textContent = '✨ ㄱ + ㅏ = 가!'; add(); speak('가'); }
+  else m.textContent = '🌱 힌트: ㄱ과 ㅏ가 만나면?';
+}
+
+function word(ok){
+  const m = document.getElementById('wm');
+  if (ok){ m.textContent = '🎉 사과를 찾았어!'; add(); speak('사과'); }
+  else m.textContent = '👀 그림을 다시 살펴보자!';
+}
+</script>
+</body>
+</html>
