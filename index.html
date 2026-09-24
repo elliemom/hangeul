@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -6,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>한글탐험대</title>
 <style>
-*{box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:#fff7ec;color:#342b2b;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
 .app{max-width:520px;margin:auto;min-height:100vh;background:#fffdf8;padding:18px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -18,24 +19,37 @@ body{margin:0;background:#fff7ec;color:#342b2b;font-family:-apple-system,BlinkMa
 .buddy{font-size:78px}
 .hero h1{margin:4px 0 8px;font-size:30px}
 .hero p{margin:0 0 20px}
-.btn{border:0;border-radius:18px;padding:15px 20px;font-size:18px;font-weight:900;background:#ff8a5b;color:white;cursor:pointer}
+.btn{border:0;border-radius:18px;padding:15px 20px;font-size:18px;font-weight:900;background:#ff8a5b;color:#fff;cursor:pointer}
+.btn:active{transform:scale(.97)}
 .section{font-size:19px;font-weight:900;margin:22px 0 10px}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card{border:2px solid #f0e4d6;background:white;border-radius:22px;padding:18px;text-align:center;cursor:pointer}
+.card{border:2px solid #f0e4d6;background:#fff;border-radius:22px;padding:18px;text-align:center;cursor:pointer}
+.card:active{transform:scale(.97)}
 .card .i{font-size:38px}
 .card b{display:block;margin-top:8px}
+.small{font-size:14px;color:#81766d}
 .back{border:0;background:#eee5db;padding:9px 13px;border-radius:14px;font-weight:800;cursor:pointer}
 .title{font-size:25px;font-weight:900;margin:18px 0 8px}
 .hint{color:#756a61}
-.listen{display:block;margin:12px auto 20px;border:0;border-radius:50%;width:62px;height:62px;font-size:28px;background:#ffe89a;cursor:pointer}
-.letter{font-size:120px;font-weight:900;text-align:center;color:#ff7954;margin:18px 0 4px}
+.bar{height:12px;background:#f0e4d6;border-radius:8px;margin:12px 0;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:#ff8a5b;border-radius:8px;transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-weight:800;font-size:15px;color:#756a61}
+.listen{display:block;margin:12px auto 12px;border:0;border-radius:50%;width:62px;height:62px;font-size:28px;background:#ffe89a;cursor:pointer}
+.big{font-size:110px;font-weight:900;text-align:center;color:#ff7954;margin:12px 0 4px;line-height:1.1}
+.eq{font-size:46px;font-weight:900;text-align:center;margin:26px 0}
+.pic{font-size:100px;text-align:center;margin:20px 0}
 .question{text-align:center;font-size:19px;font-weight:800}
 .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
-.choice{border:2px solid #eadfd4;background:white;border-radius:19px;padding:20px 5px;font-size:34px;font-weight:900;cursor:pointer}
+.choice{border:2px solid #eadfd4;background:#fff;border-radius:19px;padding:20px 5px;font-size:32px;font-weight:900;cursor:pointer}
+.choice.ok{background:#c9f2c7;border-color:#5cc45a}
+.choice.no{background:#ffd6d6;border-color:#f08a8a}
+.choice:disabled{cursor:default}
 .msg{text-align:center;min-height:36px;font-size:20px;font-weight:900;margin:14px 0}
-.combine{text-align:center;font-size:48px;font-weight:900;margin:30px 0}
-.wordpic{text-align:center;font-size:100px;margin:24px}
-.small{font-size:14px;color:#81766d}
+.next{display:none;margin:0 auto}
+.result{text-align:center}
+.result .big{font-size:80px}
+.stars3{font-size:44px;margin:8px 0}
+.streak{text-align:center;font-weight:900;color:#ff7954;min-height:24px}
 </style>
 </head>
 <body>
@@ -51,106 +65,204 @@ body{margin:0;background:#fff7ec;color:#342b2b;font-family:-apple-system,BlinkMa
       <div class="buddy">🐰</div>
       <h1>오늘의 한글 모험!</h1>
       <p>토끼랑 같이 글자를 찾아보자 ✨</p>
-      <button class="btn" onclick="go('sound')">모험 시작하기 🚀</button>
+      <button class="btn" onclick="start('sound')">모험 시작하기 🚀</button>
     </div>
     <div class="section">오늘의 탐험</div>
     <div class="cards">
-      <div class="card" onclick="go('sound')"><div class="i">🔊</div><b>소리 탐험</b><span class="small">글자를 듣고 찾아요</span></div>
-      <div class="card" onclick="go('combine')"><div class="i">🧩</div><b>글자 만들기</b><span class="small">ㄱ + ㅏ = 가</span></div>
-      <div class="card" onclick="go('word')"><div class="i">🍎</div><b>단어 탐험</b><span class="small">그림과 글자를 연결해요</span></div>
-      <div class="card" onclick="alert('다음 업데이트에서 만나요! ✏️')"><div class="i">✏️</div><b>따라쓰기</b><span class="small">준비 중</span></div>
+      <div class="card" onclick="start('sound')"><div class="i">🔊</div><b>소리 탐험</b><span class="small">글자를 듣고 찾아요</span></div>
+      <div class="card" onclick="start('combine')"><div class="i">🧩</div><b>글자 만들기</b><span class="small">ㄱ + ㅏ = 가</span></div>
+      <div class="card" onclick="start('word')"><div class="i">🍎</div><b>단어 탐험</b><span class="small">그림과 글자를 연결해요</span></div>
+      <div class="card" onclick="start('mix')"><div class="i">🎲</div><b>섞어서 도전</b><span class="small">모든 문제가 랜덤!</span></div>
     </div>
   </section>
 
-  <section id="sound" class="page">
-    <button class="back" onclick="go('home')">← 돌아가기</button>
-    <div class="title">🔊 소리 탐험</div>
-    <div class="hint">소리를 듣고 같은 글자를 찾아줘!</div>
-    <div class="letter">ㄱ</div>
-    <button class="listen" onclick="speak('기역')">🔊</button>
-    <div class="question">“ㄱ”을 찾아볼까?</div>
-    <div class="choices">
-      <button class="choice" onclick="pick(this,false)">ㅁ</button>
-      <button class="choice" onclick="pick(this,true)">ㄱ</button>
-      <button class="choice" onclick="pick(this,false)">ㅂ</button>
-    </div>
-    <div id="sm" class="msg"></div>
+  <section id="quiz" class="page">
+    <button class="back" onclick="goHome()">← 돌아가기</button>
+    <div class="title" id="qtitle"></div>
+    <div class="meta"><span id="qnum"></span><span id="qscore"></span></div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="streak" id="streak"></div>
+    <div id="qbody"></div>
+    <div class="choices" id="choices"></div>
+    <div id="msg" class="msg"></div>
+    <button class="btn next" id="nextBtn" onclick="next()">다음 문제 ➡️</button>
   </section>
 
-  <section id="combine" class="page">
-    <button class="back" onclick="go('home')">← 돌아가기</button>
-    <div class="title">🧩 글자 만들기</div>
-    <div class="hint">두 친구를 만나게 해보자!</div>
-    <div class="combine">ㄱ + ㅏ = ?</div>
-    <div class="choices">
-      <button class="choice" onclick="combine(false)">나</button>
-      <button class="choice" onclick="combine(true)">가</button>
-      <button class="choice" onclick="combine(false)">다</button>
+  <section id="result" class="page">
+    <div class="result">
+      <div class="big" id="rEmoji">🎉</div>
+      <h1 id="rTitle"></h1>
+      <div class="stars3" id="rStars"></div>
+      <p id="rText"></p>
+      <button class="btn" onclick="restart()">한 번 더! 🔁</button>
+      <p></p>
+      <button class="back" onclick="goHome()">홈으로</button>
     </div>
-    <div id="cm" class="msg"></div>
-  </section>
-
-  <section id="word" class="page">
-    <button class="back" onclick="go('home')">← 돌아가기</button>
-    <div class="title">🍎 단어 탐험</div>
-    <div class="hint">그림을 보고 맞는 단어를 찾아줘!</div>
-    <div class="wordpic">🍎</div>
-    <div class="choices">
-      <button class="choice" onclick="word(false)">포도</button>
-      <button class="choice" onclick="word(true)">사과</button>
-      <button class="choice" onclick="word(false)">우유</button>
-    </div>
-    <div id="wm" class="msg"></div>
   </section>
 
 </div>
 
 <script>
-let stars = 0;
+var TOTAL = 10;
+var stars = 0, mode = 'sound', qi = 0, correct = 0, streak = 0, cur = null, locked = false, used = [];
 
-function go(id){
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-  window.scrollTo(0, 0);
-}
+var CONS = [
+  ['ㄱ','기역'],['ㄴ','니은'],['ㄷ','디귿'],['ㄹ','리을'],['ㅁ','미음'],
+  ['ㅂ','비읍'],['ㅅ','시옷'],['ㅇ','이응'],['ㅈ','지읒'],['ㅊ','치읓'],
+  ['ㅋ','키읔'],['ㅌ','티읕'],['ㅍ','피읖'],['ㅎ','히읗']
+];
+var VOW = [
+  ['ㅏ','아'],['ㅑ','야'],['ㅓ','어'],['ㅕ','여'],['ㅗ','오'],
+  ['ㅛ','요'],['ㅜ','우'],['ㅠ','유'],['ㅡ','으'],['ㅣ','이']
+];
+var CI = {'ㄱ':0,'ㄴ':2,'ㄷ':3,'ㄹ':5,'ㅁ':6,'ㅂ':7,'ㅅ':9,'ㅇ':11,'ㅈ':12,'ㅊ':14,'ㅋ':15,'ㅌ':16,'ㅍ':17,'ㅎ':18};
+var VI = {'ㅏ':0,'ㅑ':2,'ㅓ':4,'ㅕ':6,'ㅗ':8,'ㅛ':12,'ㅜ':13,'ㅠ':17,'ㅡ':18,'ㅣ':20};
+var WORDS = [
+  ['🍎','사과'],['🍇','포도'],['🥛','우유'],['🍌','바나나'],['🍓','딸기'],
+  ['🍊','귤'],['🐶','강아지'],['🐱','고양이'],['🐰','토끼'],['🐘','코끼리'],
+  ['🐟','물고기'],['🐻','곰'],['🚗','자동차'],['🚌','버스'],['✈️','비행기'],
+  ['🌞','해'],['🌙','달'],['⭐','별'],['🌳','나무'],['🌸','꽃'],
+  ['🏠','집'],['📚','책'],['⚽','공'],['🍚','밥'],['🍞','빵']
+];
 
-function add(){
-  stars++;
-  document.getElementById('stars').textContent = stars;
+function $(id){return document.getElementById(id)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rnd(i+1);var t=a[i];a[i]=a[j];a[j]=t}return a}
+function pickOthers(list,keep,n,idx){
+  var pool=list.filter(function(x){return x[idx]!==keep});
+  return shuffle(pool).slice(0,n).map(function(x){return x[idx]});
 }
+function make(cor,others){return {answer:cor,options:shuffle([cor].concat(others))}}
+function syl(c,v){return String.fromCharCode(0xAC00+CI[c]*588+VI[v]*28)}
 
 function speak(t){
-  if (!('speechSynthesis' in window)) return;
-  try {
+  if(!('speechSynthesis' in window))return;
+  try{
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(t);
-    u.lang = 'ko-KR';
-    u.rate = 0.8;
-    const ko = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith('ko'));
-    if (ko) u.voice = ko;
+    var u=new SpeechSynthesisUtterance(t);
+    u.lang='ko-KR';u.rate=.8;
+    var ko=speechSynthesis.getVoices().filter(function(v){return v.lang&&v.lang.indexOf('ko')===0})[0];
+    if(ko)u.voice=ko;
     speechSynthesis.speak(u);
-  } catch (e) {}
+  }catch(e){}
+}
+if('speechSynthesis' in window)speechSynthesis.getVoices();
+
+function show(id){
+  var ps=document.querySelectorAll('.page');
+  for(var i=0;i<ps.length;i++)ps[i].classList.remove('on');
+  $(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+function goHome(){show('home')}
+function addStar(n){stars+=n;$('stars').textContent=stars}
+
+function start(m){
+  mode=m;qi=0;correct=0;streak=0;used=[];
+  show('quiz');
+  nextQ();
+}
+function restart(){start(mode)}
+
+function makeQ(kind){
+  var q={kind:kind};
+  if(kind==='sound'){
+    var t;do{t=CONS[rnd(CONS.length)]}while(used.indexOf('s'+t[0])>=0&&used.length<CONS.length);
+    used.push('s'+t[0]);
+    var o=make(t[0],pickOthers(CONS,t[0],2,0));
+    q.title='🔊 소리 탐험';q.hint='소리를 듣고 같은 글자를 찾아줘!';
+    q.big=t[0];q.say=t[1];q.ask='“'+t[0]+'”을 찾아볼까?';q.answer=o.answer;q.options=o.options;q.doneSay=t[1];
+    q.mode=rnd(2);
+    if(q.mode===1){q.big='🔊';q.ask='소리를 듣고 맞는 글자를 골라줘!';}
+  }else if(kind==='combine'){
+    var c,v;
+    do{c=CONS[rnd(CONS.length)][0];v=VOW[rnd(VOW.length)][0]}while(used.indexOf(c+v)>=0&&used.length<50);
+    used.push(c+v);
+    var ans=syl(c,v);
+    var oth=[];
+    while(oth.length<2){
+      var c2=CONS[rnd(CONS.length)][0],v2=VOW[rnd(VOW.length)][0];
+      var s2=syl(c2,v2);
+      if(s2!==ans&&oth.indexOf(s2)<0)oth.push(s2);
+    }
+    var o2=make(ans,oth);
+    q.title='🧩 글자 만들기';q.hint='두 친구를 만나게 해보자!';
+    q.eq=c+' + '+v+' = ?';q.ask='';q.answer=o2.answer;q.options=o2.options;q.doneSay=ans;
+  }else{
+    var w;do{w=WORDS[rnd(WORDS.length)]}while(used.indexOf('w'+w[1])>=0&&used.length<WORDS.length);
+    used.push('w'+w[1]);
+    var o3=make(w[1],pickOthers(WORDS,w[1],2,1));
+    q.title='🍎 단어 탐험';q.hint='그림을 보고 맞는 단어를 찾아줘!';
+    q.pic=w[0];q.ask='';q.answer=o3.answer;q.options=o3.options;q.doneSay=w[1];
+  }
+  return q;
 }
 
-if ('speechSynthesis' in window) speechSynthesis.getVoices();
-
-function pick(el, ok){
-  const m = document.getElementById('sm');
-  if (ok){ m.textContent = '🎉 정답! 정말 잘했어!'; add(); speak('정답!'); }
-  else m.textContent = '💛 다시 찾아볼까?';
+function nextQ(){
+  if(qi>=TOTAL){finish();return}
+  var kind=mode;
+  if(mode==='mix')kind=['sound','combine','word'][rnd(3)];
+  cur=makeQ(kind);locked=false;
+  $('qtitle').textContent=cur.title;
+  $('qnum').textContent=(qi+1)+' / '+TOTAL;
+  $('qscore').textContent='맞은 개수 '+correct;
+  $('bar').style.width=(qi/TOTAL*100)+'%';
+  $('streak').textContent=streak>=2?('🔥 '+streak+'연속 정답!'):'';
+  $('msg').textContent='';
+  $('nextBtn').style.display='none';
+  var html='<div class="hint" style="text-align:center">'+cur.hint+'</div>';
+  if(cur.big)html+='<div class="big">'+cur.big+'</div>';
+  if(cur.say)html+='<button class="listen" onclick="speak(\''+cur.say+'\')">🔊</button>';
+  if(cur.eq)html+='<div class="eq">'+cur.eq+'</div>';
+  if(cur.pic)html+='<div class="pic">'+cur.pic+'</div>';
+  if(cur.ask)html+='<div class="question">'+cur.ask+'</div>';
+  $('qbody').innerHTML=html;
+  var ch=$('choices');ch.innerHTML='';
+  cur.options.forEach(function(opt){
+    var b=document.createElement('button');
+    b.className='choice';b.textContent=opt;
+    b.onclick=function(){answer(b,opt)};
+    ch.appendChild(b);
+  });
+  if(cur.say)setTimeout(function(){speak(cur.say)},250);
 }
 
-function combine(ok){
-  const m = document.getElementById('cm');
-  if (ok){ m.textContent = '✨ ㄱ + ㅏ = 가!'; add(); speak('가'); }
-  else m.textContent = '🌱 힌트: ㄱ과 ㅏ가 만나면?';
+function answer(btn,opt){
+  if(locked)return;
+  if(opt===cur.answer){
+    locked=true;correct++;streak++;
+    btn.classList.add('ok');
+    var bonus=streak>=3?2:1;
+    addStar(bonus);
+    $('msg').textContent=(streak>=3?'🔥 대단해! ':'🎉 정답! ')+'⭐ +'+bonus;
+    $('qscore').textContent='맞은 개수 '+correct;
+    speak(cur.doneSay);
+    var bs=$('choices').querySelectorAll('.choice');
+    for(var i=0;i<bs.length;i++)bs[i].disabled=true;
+    $('nextBtn').style.display='block';
+    $('nextBtn').textContent=(qi+1>=TOTAL)?'결과 보기 🏆':'다음 문제 ➡️';
+  }else{
+    streak=0;
+    btn.classList.add('no');btn.disabled=true;
+    $('msg').textContent='💛 다시 찾아볼까?';
+    $('streak').textContent='';
+  }
 }
+function next(){qi++;nextQ()}
 
-function word(ok){
-  const m = document.getElementById('wm');
-  if (ok){ m.textContent = '🎉 사과를 찾았어!'; add(); speak('사과'); }
-  else m.textContent = '👀 그림을 다시 살펴보자!';
+function finish(){
+  $('bar').style.width='100%';
+  var pct=correct/TOTAL;
+  var st=pct>=.9?3:pct>=.6?2:1;
+  var bonus=st*2;addStar(bonus);
+  $('rEmoji').textContent=st===3?'🏆':st===2?'🎉':'🐰';
+  $('rTitle').textContent=st===3?'완벽해요!':st===2?'정말 잘했어요!':'좋은 시작이에요!';
+  $('rStars').textContent='⭐⭐⭐'.slice(0,st)+'☆☆☆'.slice(0,3-st);
+  $('rText').textContent=TOTAL+'문제 중 '+correct+'개 맞혔어요. 보너스 ⭐ +'+bonus;
+  show('result');
+  speak(st===3?'완벽해요':'잘했어요');
 }
 </script>
+
 </body>
 </html>
